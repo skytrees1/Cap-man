@@ -12,17 +12,6 @@ class CapMan(pygame.sprite.Sprite):
         self.image = pygame.image.load('../zdj/cap_man_1.png').convert_alpha()
         #Podstawowa pozycja Cap - Mana
         self.rect = self.image.get_rect(center = (200,500))
-    #def player_input(self):
-        #Funkcja poruszania się Cap - Mana po wciśnięciu odpowiednich klawiszy, obecnie niepotrzebna
-        # keys = pygame.key.get_pressed()
-        # if keys[pygame.K_UP] or keys[pygame.K_w]:
-        #     self.rect.y -= self.speed
-        # elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
-        #     self.rect.y += self.speed
-        # elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-        #     self.rect.x += self.speed
-        # elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
-        #     self.rect.x -= self.speed
     def player_movement(self, pressed_key):
         #Porusza się w odpowiednim kierunku pod warunkiem że środek jest na ekranie
         #Oraz nie zostanie wciśnięty inny klawisz
@@ -36,6 +25,7 @@ class CapMan(pygame.sprite.Sprite):
             self.rect.x -= self.speed
     @staticmethod
     def checking_Pressed_Keys():
+        #Zwraca obecnie wciśnięty klawisz, jeżeli jest jednym z tych które bierzemy pod uwagę
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             return pygame.K_UP
@@ -48,6 +38,11 @@ class CapMan(pygame.sprite.Sprite):
         return None
     def update(self,pressed_key):
         self.player_movement(pressed_key)
+    #Funkcje do zwiększenia i zmniejszenia prędkości 
+    def increase_speed(self):
+        self.speed += 2
+    def reduce_speed(self):
+        self.speed -= 2
 
         
 pygame.init()
@@ -55,7 +50,8 @@ pygame.init()
 screen = pygame.display.set_mode((920,680))
 clock = pygame.time.Clock()
 running = True
-pressed_key = None
+#Potrzebna zmienna nr.1
+PRESSED_KEY = None
 #Stworzenie naszej postaci, przed główną pętlą gry
 player = pygame.sprite.GroupSingle()
 player.add(CapMan())
@@ -64,19 +60,25 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             exit()
+        #Potrzebne do poprawnego funkcjonowania
         if event.type == pygame.KEYDOWN:
             last_key = player.sprite.checking_Pressed_Keys()
             if last_key != None:
-                pressed_key = last_key
+                PRESSED_KEY = last_key
     screen.fill("Purple")
     #Narysowanie Cap-Mana na ekranie
     player.draw(screen)
     #Aktualizuje co robimy z naszą postacią
-    player.update(pressed_key)
+    player.update(PRESSED_KEY)
     #
     pygame.display.flip()
     #Testowe odwołanie się do zmiennej hearts oraz zmiana jej wartości
+    #Po podanym warunku Postać się zatrzymuje (pressed_key = None) i potem można dalej ustawić kierunek
     # player.sprite.hearts -= 1
+    # if player.sprite.hearts  == -150:
+    #Poprawnie działa increase_speed()
+        # player.sprite.increase_speed()
+    #     pressed_key = None
     # print(player.sprite.hearts)
     clock.tick(60)
 pygame.quit()
