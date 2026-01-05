@@ -23,6 +23,7 @@ while running:
             last_key = player.sprite.checking_Pressed_Keys()
             if last_key != None:
                 PRESSED_KEY = last_key
+                player.sprite.player_rotation(PRESSED_KEY)
     screen.fill('black')
     draw_map(screen)
     player.draw(screen)
