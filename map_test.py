@@ -1,3 +1,8 @@
+"""
+Program do testu mapy
+"""
+
+
 import pygame as p
 import copy
 from board import board
@@ -7,7 +12,7 @@ from map_generator import draw_map
 p.init()
 
 screen = p.display.set_mode((WIDTH, HEIGHT))
-
+level = copy.deepcopy(board)
 running = True
 while running:
 
@@ -16,6 +21,6 @@ while running:
             running = False
 
     screen.fill('black')
-    draw_map(screen)
+    draw_map(screen, level)
     p.display.flip()
 p.quit()

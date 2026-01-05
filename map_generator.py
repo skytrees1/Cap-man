@@ -1,14 +1,13 @@
 import pygame as p
-import copy
 from board import board
 from CONST import *
 import math
 
 p.init()
 
-level = copy.deepcopy(board)
+# Funkcja rysująca poszczególne kafelki na mapie
 
-def draw_map(screen):
+def draw_map(screen, level):
     for i in range(len(level)):
         for j in range(len(level[i])):
             # pozioma linia niebieska
