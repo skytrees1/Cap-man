@@ -16,13 +16,13 @@ class CapMan(p.sprite.Sprite):
     def player_movement(self, pressed_key):
         #Porusza się w odpowiednim kierunku pod warunkiem że środek jest na ekranie
         #Oraz nie zostanie wciśnięty inny klawisz
-        if (pressed_key == p.K_UP or pressed_key == p.K_w) and self.rect.centery > 0:
+        if (pressed_key == p.K_UP or pressed_key == p.K_w):
             self.rect.y -= self.speed
-        elif (pressed_key == p.K_DOWN or pressed_key == p.K_s) and self.rect.centery < 680:
+        elif (pressed_key == p.K_DOWN or pressed_key == p.K_s):
             self.rect.y += self.speed
-        elif (pressed_key == p.K_RIGHT or pressed_key == p.K_d) and self.rect.centerx > 0:
+        elif (pressed_key == p.K_RIGHT or pressed_key == p.K_d):
             self.rect.x += self.speed
-        elif (pressed_key == p.K_LEFT or pressed_key == p.K_a) and self.rect.centerx < 920:
+        elif (pressed_key == p.K_LEFT or pressed_key == p.K_a):
             self.rect.x -= self.speed
     @staticmethod
     def checking_Pressed_Keys():
@@ -37,6 +37,7 @@ class CapMan(p.sprite.Sprite):
         elif keys[p.K_LEFT] or keys[p.K_a]:
             return p.K_LEFT
         return None
+    #Zmienia kierunek poruszania się postaci
     def update(self,pressed_key):
         self.player_movement(pressed_key)
     #Funkcje do zwiększenia i zmniejszenia prędkości 

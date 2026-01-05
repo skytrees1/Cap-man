@@ -8,8 +8,7 @@ p.init()
 screen = p.display.set_mode((920,680))
 clock = p.time.Clock()
 running = True
-#Potrzebna zmienna nr.1
-# PRESSED_KEY = None
+
 #Stworzenie naszej postaci, przed główną pętlą gry
 player = p.sprite.GroupSingle()
 player.add(CapMan())
@@ -18,25 +17,19 @@ while running:
         if event.type == p.QUIT:
             running = False
             exit()
-        #Potrzebne do poprawnego funkcjonowania
+        #Sprawdza czy wcisneliśmy jakiś przycisk
         if event.type == p.KEYDOWN:
+            #Przypisuje klawisz jaki wcisneliśmy do zmiennej last_key
             last_key = player.sprite.checking_Pressed_Keys()
-            if last_key != None:
+            #Last_key = None wtw gdy nie jest to klawisz odpowiadający za zmiane kierunku (strzałki albo WASD)
+            if last_key != None and last_key != PRESSED_KEY:
                 PRESSED_KEY = last_key
     screen.fill("Purple")
     #Narysowanie Cap-Mana na ekranie
     player.draw(screen)
     #Aktualizuje co robimy z naszą postacią
     player.update(PRESSED_KEY)
-    #
     p.display.flip()
-    #Testowe odwołanie się do zmiennej hearts oraz zmiana jej wartości
-    #Po podanym warunku Postać się zatrzymuje (pressed_key = None) i potem można dalej ustawić kierunek
-    # player.sprite.hearts -= 1
-    # if player.sprite.hearts  == -150:
-    #Poprawnie działa increase_speed()
-        # player.sprite.increase_speed()
-    #     pressed_key = None
-    # print(player.sprite.hearts)
+    #Ustawia maks FPS, prędkość obiektów jest zależna od ilości FPS
     clock.tick(60)
 p.quit()
