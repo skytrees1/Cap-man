@@ -10,21 +10,59 @@ class CapMan(p.sprite.Sprite):
         #Prędkość z jaką Cap-Man będzie się poruszał (pixels per frame)
         self.speed = 1
         #Pomocniczy obrazek, do zmiany
+        self.angle = 0
         self.image = p.image.load('../zdj/cap_man_1.png').convert_alpha()
-        self.image = p.transform.scale(self.image,(45,45))
+        self.image = p.transform.scale(self.image,(75,75))
         #Podstawowa pozycja Cap - Mana
         self.rect = self.image.get_rect(center = (200,500))
     def player_movement(self, pressed_key):
         #Porusza się w odpowiednim kierunku pod warunkiem że środek jest na ekranie
         #Oraz nie zostanie wciśnięty inny klawisz
+        # 0 stopni - porusza się w prawo
+        # 90 stopni - porusza się w dół
+        # 270 stopni - porusza się w górę
+        # 180 stopni - porusza się w lewo
+        # rotated = p.transform.rotate(self.image, self.angle)
         if (pressed_key == p.K_UP or pressed_key == p.K_w):
             self.rect.y -= self.speed
+            if self.angle == 90:
+                self.image = p.transform.flip(self.image,False, True)
+            elif self.angle == 0:
+                self.image = p.transform.rotate(self.image, 90)
+            elif self.angle == 180:
+                self.image = p.transform.rotate(self.image, -90)
+                self.image = p.transform.flip(self.image,True, False)
+            self.angle = 270
         elif (pressed_key == p.K_DOWN or pressed_key == p.K_s):
             self.rect.y += self.speed
+            if self.angle == 0:
+                self.image = p.transform.rotate(self.image, -90)
+                self.image = p.transform.flip(self.image,True, False)
+            elif self.angle == 270:
+                self.image = p.transform.flip(self.image,False, True)
+            elif self.angle == 180:
+                self.image = p.transform.rotate(self.image, 90)
+            self.angle = 90
         elif (pressed_key == p.K_RIGHT or pressed_key == p.K_d):
             self.rect.x += self.speed
+            if self.angle == 180:
+                self.image = p.transform.flip(self.image,True, False)
+            elif self.angle == 270:
+                self.image = p.transform.rotate(self.image, -90)
+            elif self.angle == 90:
+                self.image = p.transform.flip(self.image,False, True)
+                self.image = p.transform.rotate(self.image, -90)
+            self.angle = 0
         elif (pressed_key == p.K_LEFT or pressed_key == p.K_a):
             self.rect.x -= self.speed
+            if self.angle == 0:
+                self.image = p.transform.flip(self.image,True, False)
+            elif self.angle == 90:
+                self.image = p.transform.rotate(self.image, -90)
+            elif self.angle == 270:
+                self.image = p.transform.rotate(self.image, -90)
+                self.image = p.transform.flip(self.image,True, False)
+            self.angle = 180
     @staticmethod
     def checking_Pressed_Keys():
         #Zwraca obecnie wciśnięty klawisz, jeżeli jest jednym z tych które bierzemy pod uwagę
@@ -47,4 +85,3 @@ class CapMan(p.sprite.Sprite):
     def reduce_speed(self):
         self.speed -= 1
 
-        
