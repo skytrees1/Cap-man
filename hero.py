@@ -79,6 +79,12 @@ class CapMan(p.sprite.Sprite):
     #Zmienia kierunek poruszania się postaci
     def update(self,pressed_key):
         self.player_movement(pressed_key)
+        #Teleport Cap-Mana
+        #40px od prawej krawędzi ekranu, i 10 od lewej
+        if self.rect.centerx > WIDTH - 40:
+            self.rect.centerx = 10
+        elif self.rect.centerx < 10:
+            self.rect.centerx = WIDTH - 40
     #Funkcje do zwiększenia i zmniejszenia prędkości 
     def increase_speed(self):
         self.speed += 1
