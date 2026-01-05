@@ -13,8 +13,8 @@ class CapMan(p.sprite.Sprite):
         self.angle = 0
         self.image = p.image.load('../zdj/cap_man_1.png').convert_alpha()
         self.image = p.transform.scale(self.image,(45,45))
-        #Podstawowa pozycja Cap - Mana
-        self.rect = self.image.get_rect(center = (200,500))
+        #Podstawowa pozycja Cap - Mana na obecnej mapie
+        self.rect = self.image.get_rect(center = (STARTING_POSITION_X,STARTING_POSITION_Y))
     def player_movement(self, pressed_key):
         #Porusza się w odpowiednim kierunku pod warunkiem że środek jest na ekranie
         #Oraz nie zostanie wciśnięty inny klawisz
@@ -96,4 +96,8 @@ class CapMan(p.sprite.Sprite):
         self.speed += 1
     def reduce_speed(self):
         self.speed -= 1
+    def check_position(self):
+
+        #Czy postać może poruszyć się w Prawo,Lewo, Górę, Dół
+        turns = [False,False,False,False]
 

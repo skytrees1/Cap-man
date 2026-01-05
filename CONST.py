@@ -3,3 +3,6 @@ WIDTH = 1170
 TILE_SIZE_X = WIDTH  // 41
 TILE_SIZE_Y = (HEIGHT - 50)// 29
 PRESSED_KEY = None
+#Początkowa pozycja Cap-Mana na mapie
+STARTING_POSITION_X = 572
+STARTING_POSITION_Y = 612
