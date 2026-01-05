@@ -12,7 +12,7 @@ class CapMan(p.sprite.Sprite):
         #Pomocniczy obrazek, do zmiany
         self.angle = 0
         self.image = p.image.load('../zdj/cap_man_1.png').convert_alpha()
-        self.image = p.transform.scale(self.image,(75,75))
+        self.image = p.transform.scale(self.image,(45,45))
         #Podstawowa pozycja Cap - Mana
         self.rect = self.image.get_rect(center = (200,500))
     def player_movement(self, pressed_key):
