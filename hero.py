@@ -8,9 +8,10 @@ class CapMan(p.sprite.Sprite):
         #Ilość serduszek
         self.hearts = 2
         #Prędkość z jaką Cap-Man będzie się poruszał (pixels per frame)
-        self.speed = 2
+        self.speed = 1
         #Pomocniczy obrazek, do zmiany
         self.image = p.image.load('../zdj/cap_man_1.png').convert_alpha()
+        self.image = p.transform.scale(self.image,(45,45))
         #Podstawowa pozycja Cap - Mana
         self.rect = self.image.get_rect(center = (200,500))
     def player_movement(self, pressed_key):
@@ -42,8 +43,8 @@ class CapMan(p.sprite.Sprite):
         self.player_movement(pressed_key)
     #Funkcje do zwiększenia i zmniejszenia prędkości 
     def increase_speed(self):
-        self.speed += 2
+        self.speed += 1
     def reduce_speed(self):
-        self.speed -= 2
+        self.speed -= 1
 
         
