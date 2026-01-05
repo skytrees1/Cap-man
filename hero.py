@@ -18,13 +18,22 @@ class CapMan(p.sprite.Sprite):
     def player_movement(self, pressed_key):
         #Porusza się w odpowiednim kierunku pod warunkiem że środek jest na ekranie
         #Oraz nie zostanie wciśnięty inny klawisz
+        if (pressed_key == p.K_UP or pressed_key == p.K_w):
+            self.rect.y -= self.speed
+        elif (pressed_key == p.K_DOWN or pressed_key == p.K_s):
+            self.rect.y += self.speed
+        elif (pressed_key == p.K_RIGHT or pressed_key == p.K_d):
+            self.rect.x += self.speed
+        elif (pressed_key == p.K_LEFT or pressed_key == p.K_a):
+            self.rect.x -= self.speed
+    def player_rotation(self,pressed_key):
+        #Oraz nie zostanie wciśnięty inny klawisz
         # 0 stopni - porusza się w prawo
         # 90 stopni - porusza się w dół
         # 270 stopni - porusza się w górę
         # 180 stopni - porusza się w lewo
         # rotated = p.transform.rotate(self.image, self.angle)
         if (pressed_key == p.K_UP or pressed_key == p.K_w):
-            self.rect.y -= self.speed
             if self.angle == 90:
                 self.image = p.transform.flip(self.image,False, True)
             elif self.angle == 0:
@@ -34,7 +43,6 @@ class CapMan(p.sprite.Sprite):
                 self.image = p.transform.flip(self.image,True, False)
             self.angle = 270
         elif (pressed_key == p.K_DOWN or pressed_key == p.K_s):
-            self.rect.y += self.speed
             if self.angle == 0:
                 self.image = p.transform.rotate(self.image, -90)
                 self.image = p.transform.flip(self.image,True, False)
@@ -44,7 +52,6 @@ class CapMan(p.sprite.Sprite):
                 self.image = p.transform.rotate(self.image, 90)
             self.angle = 90
         elif (pressed_key == p.K_RIGHT or pressed_key == p.K_d):
-            self.rect.x += self.speed
             if self.angle == 180:
                 self.image = p.transform.flip(self.image,True, False)
             elif self.angle == 270:
@@ -54,7 +61,6 @@ class CapMan(p.sprite.Sprite):
                 self.image = p.transform.rotate(self.image, -90)
             self.angle = 0
         elif (pressed_key == p.K_LEFT or pressed_key == p.K_a):
-            self.rect.x -= self.speed
             if self.angle == 0:
                 self.image = p.transform.flip(self.image,True, False)
             elif self.angle == 90:

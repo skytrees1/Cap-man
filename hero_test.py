@@ -24,6 +24,7 @@ while running:
             #Last_key = None wtw gdy nie jest to klawisz odpowiadający za zmiane kierunku (strzałki albo WASD)
             if last_key != None and last_key != PRESSED_KEY:
                 PRESSED_KEY = last_key
+                player.sprite.player_rotation(PRESSED_KEY)
     screen.fill("Purple")
     #Narysowanie Cap-Mana na ekranie
     player.draw(screen)
