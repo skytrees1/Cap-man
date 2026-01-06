@@ -1,6 +1,6 @@
-# Wymiary ekranu
 HEIGHT = 920
 WIDTH = 1230
-# Wielkości kafelków (Ekran // dlugość tablicy)
-TILE_SIZE_X = WIDTH  // 41 # szerokość
-TILE_SIZE_Y = (HEIGHT - 50)// 29 # wysokość
+TILE_SIZE_X = WIDTH  // 41
+TILE_SIZE_Y = (HEIGHT - 50)// 29
+STARTING_POSITION_X = WIDTH - (TILE_SIZE_X * 20) - 15
+STARTING_POSITION_Y = HEIGHT - 7 * TILE_SIZE_Y  - 4
