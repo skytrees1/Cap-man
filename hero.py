@@ -15,7 +15,7 @@ class CapMan(p.sprite.Sprite):
         #Pomocniczy obrazek, do zmiany
         self.angle = 0
         self.image = p.image.load('cap_man_1.png').convert_alpha()
-        self.image = p.transform.scale(self.image,(45,45))
+        self.image = p.transform.scale(self.image,(45,45)) 
         #Podstawowa pozycja Cap - Mana na obecnej mapie
         self.rect = self.image.get_rect(center = (STARTING_POSITION_X,STARTING_POSITION_Y))
     def player_movement(self, direction,turns):
@@ -92,86 +92,101 @@ class CapMan(p.sprite.Sprite):
         self.player_movement(direction, turns)
 
         # TELEPORT TUNELU 
-        if self.rect.centerx > WIDTH - 40:
+        if self.rect.centerx > WIDTH - 10:
             self.rect.centerx = 10
         elif self.rect.centerx < 10:
-            self.rect.centerx = WIDTH - 40
+            self.rect.centerx = WIDTH - 10
         
     #Funkcje do zwiększenia i zmniejszenia prędkości 
     def increase_speed(self):
         self.speed += 1
     def reduce_speed(self):
         self.speed -= 1
-    def check_position(self, direction):
-        # Czy postać może poruszyć się w Prawo,Lewo, Górę, Dół
+    def check_position(self,direction):
+        # turns = [right, left, up, down]
         turns = [False, False, False, False]
-        num_help = 15
 
-        max_y = len(level)
-        max_x = len(level[0])
+        num1 = TILE_SIZE_Y      # wysokość kafelka
+        num2 = TILE_SIZE_X      # szerokość kafelka
+        num3 = num2 // 2        # połowa kafelka 
 
-        def safe_check(y, x):
-            # y musi być w zakresie, x możemy zawinąć (tunel)
+        max_y = len(level)      # ilość kafelek w pionie
+        max_x = len(level[0])   # ilość kafelek w poziomie
+
+        def safe(y, x):
+            # y w zakresie, x może się zawijać (tunel)
             if 0 <= y < max_y:
-                x_wrapped = x % max_x
-                return level[y][x_wrapped] in ('a', 'o', 'n')
+                x = x % max_x
+                return level[y][x] in ('a', 'o', 'n')
             return False
 
-        if self.rect.centerx // 30 < 29:
+        # indeksy kafelka, na którym jest środek CapMana
+        tile_x = self.rect.centerx // num2
+        tile_y = self.rect.centery // num1
+
+        # jeśli jesteśmy "w normalnej planszy", nie w tunelu
+        if tile_x < max_x - 1:
+
+            # --- PODSTAWOWE SPRAWDZENIA W 4 KIERUNKACH ---
+
             if direction == "move_right":
-                if safe_check(self.rect.centery // TILE_SIZE_Y,
-                            (self.rect.centerx + num_help) // TILE_SIZE_X):
+                # patrzymy w PRAWO (+num3) i ustawiamy turns[0] (prawo)
+                if safe(tile_y, (self.rect.centerx + num3) // num2):
                     turns[0] = True
 
             if direction == "move_left":
-                if safe_check(self.rect.centery // TILE_SIZE_Y,
-                            (self.rect.centerx - num_help) // TILE_SIZE_X):
+                # patrzymy w LEWO (-num3) i ustawiamy turns[1] (lewo)
+                if safe(tile_y, (self.rect.centerx - num3) // num2):
                     turns[1] = True
 
             if direction == "move_up":
-                if safe_check((self.rect.centery - num_help) // TILE_SIZE_Y,
-                            self.rect.centerx // TILE_SIZE_X):
+                # patrzymy w GÓRĘ (-num3) i ustawiamy turns[2] (góra)
+                if safe((self.rect.centery - num3) // num1, self.rect.centerx // num2):
                     turns[2] = True
 
             if direction == "move_down":
-                if safe_check((self.rect.centery + num_help) // TILE_SIZE_Y,
-                            self.rect.centerx // TILE_SIZE_X):
+                # patrzymy w DÓŁ (+num3) i ustawiamy turns[3] (dół)
+                if safe((self.rect.centery + num3) // num1, self.rect.centerx // num2):
                     turns[3] = True
 
-            if direction == "move_up" or direction == "move_down":
-                if (TILE_SIZE_X // 2) - 3 <= self.rect.centerx % TILE_SIZE_X <= (TILE_SIZE_X // 2) + 3:
-                    if safe_check((self.rect.centery + num_help)//TILE_SIZE_Y,
-                                self.rect.centerx // TILE_SIZE_X):
-                        turns[3] = True
-                    if safe_check((self.rect.centery - num_help)//TILE_SIZE_Y,
-                                self.rect.centerx // TILE_SIZE_X):
+            offset_x = self.rect.centerx % num2
+            offset_y = self.rect.centery % num1
+            #Margines błędu środka CapMana kiedy możemy zmienić kierunek
+            center_min = num2 // 2 - 3   
+            center_max = num2 // 2 + 3   
+
+            # jeśli poruszamy się pionowo i jesteśmy prawie na środku w poziomie
+            if direction in ("move_up", "move_down"):
+                if center_min <= offset_x <= center_max:
+                    # kontynuacja góra/dół
+                    if safe((self.rect.centery - num3) // num1, self.rect.centerx // num2):
                         turns[2] = True
-
-                if (TILE_SIZE_Y // 2) - 3 <= self.rect.centery % TILE_SIZE_Y <= (TILE_SIZE_Y // 2) + 3:
-                    if safe_check(self.rect.centery//TILE_SIZE_Y,
-                                (self.rect.centerx - TILE_SIZE_X) // TILE_SIZE_X):
-                        turns[1] = True
-                    if safe_check(self.rect.centery//TILE_SIZE_Y,
-                                (self.rect.centerx + TILE_SIZE_X) // TILE_SIZE_X):
-                        turns[0] = True
-
-            if direction == "move_right" or direction == "move_left":
-                if (TILE_SIZE_X // 2) - 3 <= self.rect.centerx % TILE_SIZE_X <= (TILE_SIZE_X // 2) + 3:
-                    if safe_check((self.rect.centery + TILE_SIZE_Y)//TILE_SIZE_Y,
-                                self.rect.centerx // TILE_SIZE_X):
+                    if safe((self.rect.centery + num3) // num1, self.rect.centerx // num2):
                         turns[3] = True
-                    if safe_check((self.rect.centery - TILE_SIZE_Y)//TILE_SIZE_Y,
-                                self.rect.centerx // TILE_SIZE_X):
-                        turns[2] = True
 
-                if (TILE_SIZE_Y // 2) - 3 <= self.rect.centery % TILE_SIZE_Y <= (TILE_SIZE_Y // 2) + 3:
-                    if safe_check(self.rect.centery//TILE_SIZE_Y,
-                                (self.rect.centerx - num_help) // TILE_SIZE_X):
-                        turns[1] = True
-                    if safe_check(self.rect.centery//TILE_SIZE_Y,
-                                (self.rect.centerx + num_help) // TILE_SIZE_X):
-                        turns[0] = True
+                # jeśli jesteśmy prawie na środku w pionie – można skręcić lewo/prawo
+                if center_min <= offset_y <= center_max:
+                    if safe(self.rect.centery // num1, (self.rect.centerx - num2) // num2):
+                        turns[1] = True  # lewo
+                    if safe(self.rect.centery // num1, (self.rect.centerx + num2) // num2):
+                        turns[0] = True  # prawo
+
+            # jeśli poruszamy się poziomo i jesteśmy prawie na środku w poziomie
+            if direction in ("move_right", "move_left"):
+                if center_min <= offset_x <= center_max:
+                    if safe((self.rect.centery - num1) // num1, self.rect.centerx // num2):
+                        turns[2] = True  # góra
+                    if safe((self.rect.centery + num1) // num1, self.rect.centerx // num2):
+                        turns[3] = True  # dół
+
+                if center_min <= offset_y <= center_max:
+                    if safe(self.rect.centery // num1, (self.rect.centerx - num3) // num2):
+                        turns[1] = True  # lewo
+                    if safe(self.rect.centery // num1, (self.rect.centerx + num3) // num2):
+                        turns[0] = True  # prawo
+
         else:
+            # tunel – w poziomie zawsze można
             turns[0] = True
             turns[1] = True
 
