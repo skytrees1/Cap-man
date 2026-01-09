@@ -1,3 +1,8 @@
+"""
+Program do testu mapy, capmana
+"""
+
+
 import pygame as p
 import copy
 from board import board
@@ -9,10 +14,13 @@ p.init()
 
 screen = p.display.set_mode((WIDTH, HEIGHT))
 clock = p.time.Clock()
-running = True
 
 player = p.sprite.GroupSingle()
 player.add(CapMan())
+
+level = copy.deepcopy(board)
+
+running = True
 
 while running:
 
@@ -25,7 +33,7 @@ while running:
                 player.sprite.capman_direction = last_key
                 player.sprite.player_rotation(player.sprite.capman_direction)
     screen.fill('black')
-    draw_map(screen)
+    draw_map(screen, level)
     player.draw(screen)
     player.update(player.sprite.capman_direction)
     p.display.flip()
