@@ -10,6 +10,7 @@ from hero import CapMan
 pygame.init()
 screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT))
 clock = pygame.time.Clock()
+start_time = pygame.time.get_ticks()
 running = True
 
 player = pygame.sprite.GroupSingle()
@@ -33,7 +34,7 @@ while running:
     player.draw(screen)
     player.update(player.sprite.capman_direction)
     pinky.draw(screen)
-    pinky.update(CapMan)
+    pinky.update(player.sprite, (pygame.time.get_ticks() - start_time) / 1000)
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
