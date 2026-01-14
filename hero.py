@@ -13,7 +13,7 @@ class CapMan(p.sprite.Sprite):
         self.next_direction = None
         self.hearts = 2 #Ilość serduszek
         self.speed = 3 #Prędkość
-
+        self.rage = False  # Tryb zjadania duszków
         #Pomocniczy obrazek, do zmiany
 
         self.angle = 0
