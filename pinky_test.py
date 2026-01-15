@@ -4,7 +4,7 @@ from board import board as grid
 import CONST as const
 from map_generator import draw_map
 from sys import exit
-from pinky import Pinky
+from pinky_new import Pinky
 from hero import CapMan
 
 pygame.init()
