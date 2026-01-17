@@ -52,8 +52,13 @@ class Pinky(pygame.sprite.Sprite):
         #jezeli EATEN to wraca do domu
         if self.mode == "EATEN": return self.home_x, self.home_y
         #jezeli CHASE to mierzy 4 pola przed pacmana
-        target_x = pacman.rect.centerx #
-        target_y = pacman.rect.centery #
+        dir = None
+        if pacman.capman_direction == "move_right": dir = const.RIGHT
+        elif pacman.capman_direction == "move_left": dir = const.LEFT
+        elif pacman.capman_direction == "move_up": dir = const.UP
+        elif pacman.capman_direction == "move_down": dir = const.DOWN
+        target_x = pacman.rect.centerx + 4*dir[0]
+        target_y = pacman.rect.centery + 4*dir[1]
         return target_x // const.TILE_SIZE_X, target_y // const.TILE_SIZE_Y
     
     #zamian trybu wzgledem czasu
