@@ -13,7 +13,8 @@ def bfs(start_x, start_y, target_x, target_y, allowed):
     visited = set([(start_x, start_y)])
     while queue:
         curr_x, curr_y, path = queue.popleft()
-        if curr_x == target_x and curr_y == target_y: return path[1] if len(path) > 1 else -1
+        if curr_x == target_x and curr_y == target_y: 
+            return path[1] if len(path) > 1 else path[0]
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = curr_x + dx, curr_y + dy
             if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid) and (nx, ny) not in visited and grid[ny][nx] in allowed:
@@ -123,6 +124,7 @@ class Pinky(pygame.sprite.Sprite):
 
     #wyznaczenie ruchu
     def update(self, pacman, time):
+        if self.collision(pacman): return 1
         #aktualizacja trybu
         self.mode_update(time)
 
@@ -142,10 +144,6 @@ class Pinky(pygame.sprite.Sprite):
 
         allowed = "ano" if self.mode == "CHASE" else "anop" 
         goto = bfs(tile_x, tile_y, target_x, target_y, allowed)
-
-        if goto == -1:
-            #KOLIZJA
-            return
         
         goto_x, goto_y = goto
 
@@ -160,3 +158,24 @@ class Pinky(pygame.sprite.Sprite):
         #tunel
         if self.rect.centerx > const.WIDTH - 10: self.rect.centerx = 10
         elif self.rect.centerx < 10: self.rect.centerx = const.WIDTH - 10
+        return None
+    
+    #sprawdzenie kolizji
+    def collision(self, pacman):
+        pinky_tile_x = self.rect.centerx // const.TILE_SIZE_X
+        pinky_tile_y = self.rect.centery // const.TILE_SIZE_Y
+
+        pacman_tile_x = pacman.rect.centerx // const.TILE_SIZE_X
+        pacman_tile_y = pacman.rect.centery // const.TILE_SIZE_Y
+
+        return ((pinky_tile_x == pacman_tile_x) and (pinky_tile_y == pacman_tile_y))
+    
+    def scared(self):
+        self.mode = "FRIGHTEND"
+        self.speed = const.FRIGHTENED_SPEED
+        #zmiana grafiki
+    
+    def unscared(self, time):
+        self.mode = "CHASE"
+        self.mode_update(time)
+        self.speed = const.PINKY_SPEED

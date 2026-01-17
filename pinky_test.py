@@ -4,7 +4,7 @@ from board import board as grid
 import CONST as const
 from map_generator import draw_map
 from sys import exit
-from pinky_new import Pinky
+from pinky import Pinky
 from hero import CapMan
 
 pygame.init()
@@ -35,6 +35,7 @@ while running:
     player.update(player.sprite.capman_direction)
     pinky.draw(screen)
     pinky.update(player.sprite, (pygame.time.get_ticks() - start_time) / 1000)
+    if pinky.sprite.collision(player.sprite): pygame.quit()
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
