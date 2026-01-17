@@ -3,6 +3,7 @@ Pinky - różowy duszek
 """
 import pygame
 import math
+import random
 import CONST as const
 from board import board as grid
 from collections import deque
@@ -140,8 +141,8 @@ class Pinky(pygame.sprite.Sprite):
         target_x, target_y = self.get_target(pacman)
 
         if target_x == -1 and target_y == -1:
+            self.move(random.choice(moves))
             return
-            #random_move
         
         tile_x = self.rect.centerx // const.TILE_SIZE_X
         tile_y = self.rect.centery // const.TILE_SIZE_Y
