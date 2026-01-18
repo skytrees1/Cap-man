@@ -1,20 +1,25 @@
 """
-Pinky - różowy duszek
+clyde - pomaranczowy duszek
+
+jesli > 8 pol - chase jak blinky
+jesli < 8 pol - kieruje sie do rogu mapy (lewy dolny)
+
 """
+
 import pygame
-import math
 import random
 import CONST as const
 from board import board as grid
 from collections import deque
 
 #bfs
-def bfs(start_x, start_y, target_x, target_y, allowed):
+def bfs(start_x, start_y, target_x, target_y, allowed, flag):
     queue = deque([(start_x, start_y, [(start_x, start_y)])])
     visited = set([(start_x, start_y)])
     while queue:
         curr_x, curr_y, path = queue.popleft()
         if curr_x == target_x and curr_y == target_y: 
+            if flag: return len(path)
             return path[1] if len(path) > 1 else path[0]
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = curr_x + dx, curr_y + dy
@@ -23,46 +28,36 @@ def bfs(start_x, start_y, target_x, target_y, allowed):
                 queue.append((nx, ny, path + [(nx, ny)]))
     return None
 
-
-#stworzenie klasy duszka
-
-class Pinky(pygame.sprite.Sprite):
+class Clyde(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.home_x, self.home_y = 23.5*const.TILE_SIZE_X, 9.5*const.TILE_SIZE_Y #wspolrzedne poczatkowe
-        self.direction = const.LEFT #kierunek poczatkowy
-        self.mode = "SCATTER" #tryb poczatkowy
-        self.speed = const.PINKY_SPEED
-        self.cooldown = 0 #cooldown po zjedeniu
+        self.home_x, self.home_y = 22.5*const.TILE_SIZE_X, 9.5*const.TILE_SIZE_Y
+        self.direction = const.LEFT
+        self.mode = "SCATTER"
+        self.speed = const.CLYDE_SPEED
+        self.cooldown = 0
 
         #obrazek
         self.angle = 0
         self.image = pygame.image.load("cap_man_1.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (45, 45))
 
-        #wspolrzedne startowe
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))
 
-    #wyznaczenie pola w kierunku ktorego idzie duszek w zaleznosc od trybu
     def get_target(self, pacman):
-        #jezeli SCATTER to idzie do lewego gornego
-        if self.mode == "SCATTER": return 2, 2
-        #jezeli FRIGHTEND to losowy ruch
+        if self.mode == "SCATTER": return 2, 26
         if self.mode == "FRIGHTEND": return -1, -1
-        #jezeli EATEN to wraca do domu
         if self.mode == "EATEN": return self.home_x, self.home_y
-        #jezeli CHASE to mierzy 4 pola przed pacmana
-        dir = None
-        if pacman.capman_direction == None: dir = const.LEFT
-        elif pacman.capman_direction == "move_right": dir = const.RIGHT
-        elif pacman.capman_direction == "move_left": dir = const.LEFT
-        elif pacman.capman_direction == "move_up": dir = const.UP
-        elif pacman.capman_direction == "move_down": dir = const.DOWN
-        target_x = pacman.rect.centerx + 4*dir[0]
-        target_y = pacman.rect.centery + 4*dir[1]
-        return target_x // const.TILE_SIZE_X, target_y // const.TILE_SIZE_Y
-    
+        clyde_tile_x = self.rect.centerx // const.TILE_SIZE_X
+        clyde_tile_y = self.rect.centery // const.TILE_SIZE_Y
+        pacman_tile_x = pacman.rect.centerx // const.TILE_SIZE_X
+        pacman_tile_y = pacman.rect.centery // const.TILE_SIZE_Y
+        allowed = "ano" if self.mode == "CHASE" else "anop" 
+        length = bfs(clyde_tile_x, clyde_tile_y, pacman_tile_x, pacman_tile_y, allowed, 1)
+        if length > 8: return pacman_tile_x, pacman_tile_y
+        return 2, 26
+
     #zamian trybu wzgledem czasu
     def mode_update(self, time):
         if self.mode == "FRIGHTEND": return
@@ -129,7 +124,6 @@ class Pinky(pygame.sprite.Sprite):
             self.rect.centerx = center_x
         self.direction = direction
 
-    #wyznaczenie ruchu
     def update(self, pacman, time):
         #aktualizacja trybu
         self.mode_update(time)
@@ -148,9 +142,9 @@ class Pinky(pygame.sprite.Sprite):
         tile_y = self.rect.centery // const.TILE_SIZE_Y
         direction = None
 
+
         allowed = "ano" if self.mode == "CHASE" else "anop" 
-        goto = bfs(tile_x, tile_y, target_x, target_y, allowed)
-        
+        goto = bfs(tile_x, tile_y, target_x, target_y, allowed, 0)
         goto_x, goto_y = goto
 
         for i in range(4):
@@ -165,7 +159,7 @@ class Pinky(pygame.sprite.Sprite):
         if self.rect.centerx > const.WIDTH - 10: self.rect.centerx = 10
         elif self.rect.centerx < 10: self.rect.centerx = const.WIDTH - 10
         return None
-    
+
     #sprawdzenie kolizji
     def collision(self, pacman):
         pinky_tile_x = self.rect.centerx // const.TILE_SIZE_X

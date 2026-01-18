@@ -5,6 +5,7 @@ import CONST as const
 from map_generator import draw_map
 from sys import exit
 from pinky import Pinky
+from clyde import Clyde
 from hero import CapMan
 
 pygame.init()
@@ -18,6 +19,9 @@ player.add(CapMan())
 
 pinky = pygame.sprite.GroupSingle()
 pinky.add(Pinky())
+
+clyde = pygame.sprite.GroupSingle()
+clyde.add(Clyde())
 
 while running:
     for event in pygame.event.get():
@@ -34,8 +38,11 @@ while running:
     player.draw(screen)
     player.update(player.sprite.capman_direction)
     pinky.draw(screen)
+    clyde.draw(screen)
     pinky.update(player.sprite, (pygame.time.get_ticks() - start_time) / 1000)
+    clyde.update(player.sprite, (pygame.time.get_ticks() - start_time) / 1000)
     if pinky.sprite.collision(player.sprite): pygame.quit()
+    if clyde.sprite.collision(player.sprite): pygame.quit()
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
