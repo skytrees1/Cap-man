@@ -3,13 +3,8 @@ import math
 import CONST as const
 from board import board as grid
 from hero import Capman as capman
+from red import red
 import random
-
-'''
-czerwony duszek
-strateia - sledzi cap-mana
-po aktualnych wspolzednych
-'''
 
 def bfs(start_x, start_y, target_x, target_y, allowed):
     queue = deque([(start_x, start_y, [(start_x, start_y)])])
@@ -25,14 +20,12 @@ def bfs(start_x, start_y, target_x, target_y, allowed):
                 queue.append((nx, ny, path + [(nx, ny)]))
     return None
 
-
-
-class red(p.sprite.Sprite):
+class inky(p.sprite.Sprite):
     def __init__(self):
         super().__init()
         self.direction=const.RIGHT
         self.home_x = 24.5*const.TILE_SIZE_X
-        self.home_y = 9.5*const.TILE_SIZE_Y
+        self.home_y = 8.5*const.TILE_SIZE_Y
         self.mode="SCATTER"
         self.speed = const.PINKY_SPEED
         self.angle=0
@@ -40,7 +33,6 @@ class red(p.sprite.Sprite):
         self.image = p.transform.scale(self.image,(45,45))
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))
         self.cooldown = 0
-
 
     def mode_update(self, time):
         if self.mode == "FRIGHTEND": return
@@ -54,16 +46,6 @@ class red(p.sprite.Sprite):
         elif 79 < time <= 84: self.mode = "SCATTER"
         else: self.mode = "CHASE"
 
-
-    def choose_target_tile(self, capman):
-        if self.mode=="SCATTER":
-            return 2, const.WIDTH/const.TILE_SIZE_X -2
-        if self.mode=="EATEN":
-            return self.home_x, self.home_y
-        if self.mode=="FRIGHTENED":
-            return -1, -1
-        return capman.rect.centerx//const.TILE_SIZE_X, capman.rect.centery//const.TILE_SIZE_Y
-    
     def pos_moves(self):
         moves = [False, False, False, False]
 
@@ -98,7 +80,35 @@ class red(p.sprite.Sprite):
         else:
             moves[0] = moves[1] = True
         return moves
-    
+    def choose_target_tile(self, capman, red):
+        if self.mode=="FRIGHTENED":
+            return -1, -1
+        if self.mode=="EATEN":
+            return self.home_x//const.TILE_SIZE_X, self.home_y//const.TILE_SIZE_Y
+        if self.mode=="SCATTER":
+            return len(grid[0])-2, len(grid)-2
+        if capman.capman_direction == None: dir = const.LEFT
+        elif capman.capman_direction == "move_right": dir = const.RIGHT
+        elif capman.capman_direction == "move_left": dir = const.LEFT
+        elif capman.capman_direction == "move_up": dir = const.UP
+        elif capman.capman_direction == "move_down": dir = const.DOWN
+        vector_mid_x = capman.rect.centerx//const.TILE_SIZE_X + 2*dir[1]
+        vector_mid_y = capman.rect.centery//const.TILE_SIZE_Y + 2*dir[0]
+
+        vector_start_x = red.rect.centerx//const.TILE_SIZE_X
+        vector_start_y = red.rect.centery//const.TILE_SIZE_Y
+
+        vector_x = vector_mid_x-vector_start_x
+        vector_y = vector_mid_y-vector_start_y
+        vector_x*=2
+        vector_y*=2
+        target_x = vector_start_x+vector_x
+        target_y = vector_start_y+vector_y
+        if target_x>=len(grid[0]): target_x = len(grid[0])-1
+        if target_x<0: target_x=0
+        if target_y>=len(grid): target_y=len(grid)-1
+        if target_y<0: target_y=0
+        return target_x, target_y
     def choose_next_tile(self, capman):
         if self.rect.x % const.TILE_SIZE_X != 0: return
         if self.rect.y % const.TILE_SIZE_Y != 0: return
@@ -122,7 +132,7 @@ class red(p.sprite.Sprite):
             if temp_x==next_x and temp_y==next_y:
                 return const.DIRECTIONS[i]
         return None
-
+    
     def move(self, direction):
         center_x = (self.rect.centerx // const.TILE_SIZE_X) * const.TILE_SIZE_X + (const.TILE_SIZE_X // 2)
         center_y = (self.rect.centery // const.TILE_SIZE_Y) * const.TILE_SIZE_Y + (const.TILE_SIZE_Y // 2)
@@ -158,7 +168,7 @@ class red(p.sprite.Sprite):
         self.mode=="CHASE"
         self.mode_update
         self.speed=const.PINKY_SPEED
-    def update(self, capman, time):
+    def update(self, capman, red, time):
         self.mode_update(time)
 
         if self.rect.x % const.TILE_SIZE_X != 0 and self.rect.y % const.TILE_SIZE_Y != 0:
@@ -166,7 +176,7 @@ class red(p.sprite.Sprite):
             self.rect.y += self.direction[1] * self.speed
             return
         
-        target_x, target_y = self.choose_target_tile(capman)
+        target_x, target_y = self.choose_target_tile(capman, red)
 
         if self.mode=="CHASE" or self.mode=="SCATTER":
             self.speed=const.PINKY_SPEED
@@ -182,6 +192,8 @@ class red(p.sprite.Sprite):
         if self.mode == "EATEN" and abs(self.rect.x - self.home_x) < 2 and abs(self.rect.y - self.home_y) < 2: 
             self.mode == "SCATTER"
             self.cooldown = 5 
+
+
 
 
 
