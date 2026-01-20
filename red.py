@@ -95,6 +95,7 @@ class red(p.sprite.Sprite):
         if (curr_tile_x, curr_tile_y) != self.last_tile:
             
             if self.mode == "FRIGHTENED":
+                allowed="ano"
                 possible_dirs = []
                 for d in [const.UP, const.DOWN, const.LEFT, const.RIGHT]:
                     if d == (-self.direction[0], -self.direction[1]): 
@@ -141,6 +142,7 @@ class red(p.sprite.Sprite):
         #do wywolania w przypadku kolizji reda z capmanem
         if self.mode == "EATEN": return False
         if self.mode == "FRIGHTENED":
-            self.mode="EATEN"
-            self.speed=const.EATEN_SPEED
+            if self.rect.colliderect(capman.rect):
+                self.mode="EATEN"
+                self.speed=const.EATEN_SPEED
         return self.rect.colliderect(capman.rect)
