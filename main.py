@@ -1,5 +1,5 @@
 """
-Program do testu mapy, capmana
+Pętla główna gry
 """
 
 
@@ -37,20 +37,20 @@ class DummySound:
 print("--- Próba ładowania dźwięków ---")
 try:
    
-    MUSIC_MAIN = 'charge.ogg'           
-    MUSIC_FRIGHTENED = 'mystical.mp3' 
+    MUSIC_MAIN = 'assets/sounds/charge.ogg'           
+    MUSIC_FRIGHTENED = 'assets/sounds/mystical.mp3' 
 
     
-    try: sfx_dot = p.mixer.Sound('Picked Coin Echo 2.wav'); sfx_dot.set_volume(0.2)
+    try: sfx_dot = p.mixer.Sound('assets/sounds/Picked Coin Echo 2.wav'); sfx_dot.set_volume(0.2)
     except: sfx_dot = DummySound(); print("Brak pliku: sfx_dot.wav")
 
-    try: sfx_power = p.mixer.Sound('Power Up.wav'); sfx_power.set_volume(0.4)
+    try: sfx_power = p.mixer.Sound('assets/sounds/Power Up.wav'); sfx_power.set_volume(0.4)
     except: sfx_power = DummySound(); print("Brak pliku: sfx_power.wav")
 
-    try: sfx_eat_ghost = p.mixer.Sound('Win sound.wav'); sfx_eat_ghost.set_volume(1.0)
+    try: sfx_eat_ghost = p.mixer.Sound('assets/sounds/Win sound.wav'); sfx_eat_ghost.set_volume(1.0)
     except: sfx_eat_ghost = DummySound(); print("Brak pliku: sfx_eat_ghost.wav")
 
-    try: sfx_death = p.mixer.Sound('1.mp3'); sfx_death.set_volume(0.8)
+    try: sfx_death = p.mixer.Sound('assets/sounds/1.mp3'); sfx_death.set_volume(0.8)
     except: sfx_death = DummySound(); print("Brak pliku: sfx_death.wav")
 
     print("--- Dźwięki załadowane (te które znaleziono) ---")
@@ -82,8 +82,8 @@ level = copy.deepcopy(board)
 
 # Zmienne do obsługi punktacji
 score = 0
-game_font = p.font.Font("Tiny5-Regular.ttf", 45) 
-game_over_font = p.font.Font("Tiny5-Regular.ttf", 200)
+game_font = p.font.Font("assets/fonts/Tiny5-Regular.ttf", 45) 
+game_over_font = p.font.Font("assets/fonts/Tiny5-Regular.ttf", 200)
 lives = 3
 
 #Zmienne do trybu przestraszenia/FRIGHTENED

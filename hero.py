@@ -16,7 +16,7 @@ class CapMan(p.sprite.Sprite):
         #Pomocniczy obrazek, do zmiany
 
         self.angle = 0
-        self.image = p.image.load('images/cap_man_1_1.png').convert_alpha()
+        self.image = p.image.load('assets/images/cap_man_1_1.png').convert_alpha()
         self.image = p.transform.scale(self.image,(45,45)) 
 
         #Podstawowa pozycja Cap - Mana na obecnej mapie
