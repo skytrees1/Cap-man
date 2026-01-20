@@ -40,7 +40,7 @@ class Clyde(pygame.sprite.Sprite):
 
         #obrazek
         self.angle = 0
-        self.image = pygame.image.load("cap_man_1.png").convert_alpha()
+        self.image = pygame.image.load('images/clyde/clyde_down_1.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (45, 45))
 
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))

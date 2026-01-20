@@ -31,7 +31,7 @@ class Pinky(pygame.sprite.Sprite):
         self.speed = const.PINKY_SPEED
         #obrazek
         self.angle = 0
-        self.image = pygame.image.load("cap_man_1.png").convert_alpha()
+        self.image = pygame.image.load('images/pinky/pinky_down_1.png').convert_alpha()
         self.image = pygame.transform.scale(self.image,(45,45))
         #miejsce poczatkowe
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))
