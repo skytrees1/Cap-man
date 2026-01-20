@@ -8,6 +8,7 @@ class CapMan(p.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
+        self.direction = None
         self.capman_direction = None
         self.hearts = 2 #Ilość serduszek
         self.speed = 3 #Prędkość
