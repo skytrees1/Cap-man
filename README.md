@@ -31,7 +31,9 @@ Gra obsługiwana jest za pomocą klawiatury:
 
 ---
 ## Grafika z gry
-tu będzie zdjęcie z gry
+<p align="center">
+  <img src="grafika_z_gry.png" alt="Screen z gry" width="600">
+</p>
 
 ---
 ## Uruchamianie programu
