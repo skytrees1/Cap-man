@@ -84,7 +84,7 @@ level = copy.deepcopy(board)
 score = 0
 game_font = p.font.Font("Tiny5-Regular.ttf", 45) 
 game_over_font = p.font.Font("Tiny5-Regular.ttf", 200)
-lives = 1
+lives = 3
 
 #Zmienne do trybu przestraszenia/FRIGHTENED
 is_frightened = False
