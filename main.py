@@ -293,7 +293,8 @@ while running:
     if death_occured:
         lives -= 1
         print(f"HP DOWN\nREAMANING: {lives}")
-
+        p.mixer.music.stop()
+        sfx_death.play()
         player.draw(game_screen)
         p.display.flip()
 
