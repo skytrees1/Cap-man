@@ -9,14 +9,24 @@ from board import board
 from CONST import *
 from map_generator import draw_map
 from hero import CapMan
+from pinky import Pinky
+from clyde import Clyde
 
 p.init()
 
 screen = p.display.set_mode((WIDTH, HEIGHT))
 clock = p.time.Clock()
 
+start_time = p.time.get_ticks() #czas dla duszkow
+
 player = p.sprite.GroupSingle()
 player.add(CapMan())
+
+pinky = p.sprite.GroupSingle()
+pinky.add(Pinky())
+
+clyde = p.sprite.GroupSingle()
+clyde.add(Clyde())
 
 level = copy.deepcopy(board)
 
@@ -46,6 +56,11 @@ running = True
 
 while running:
 
+    current_time_seconds = (p.time.get_ticks() - start_time) / 1000
+    pinky.update(player.sprite, current_time_seconds)
+    clyde.update(player.sprite, current_time_seconds)
+
+
     for event in p.event.get():
         if event.type == p.QUIT:
             running = False
@@ -59,10 +74,16 @@ while running:
     player.draw(screen)
     player.update(player.sprite.direction)
 
+    pinky.draw(screen)
+    clyde.draw(screen)
+
     #Sprawdzenie kolizji z punktami i aktualizacja wyniku
     score = check_point_collision(player.sprite, level, score)
     score_text = game_font.render(f"Licznik punktów: {score}", True, "white")
     screen.blit(score_text, (50, HEIGHT - 40))
+
+    if pinky.sprite.collision(player.sprite) or clyde.sprite.collision(player.sprite):
+        running = False
 
     p.display.flip()
     clock.tick(60)
