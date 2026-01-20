@@ -44,10 +44,15 @@ game_font = p.font.SysFont("arial", 30)
 game_over_font = p.font.SysFont("arial", 60)
 lives = 3
 
+#Zmienne do trybu przestraszenia/FRIGHTENED
+is_frightened = False
+frightened_start_time = 0
+FRIGHTENED_DURATION = 6000 # 6 sekund jak w pacmanie oryginalnym
+
 def reset_positions():
     global start_time
     start_time = p.time.get_ticks()
-
+    is_frightened = False
     player.empty()
     pinky.empty()
     clyde.empty()
@@ -71,12 +76,74 @@ def check_point_collision(player_sprite, current_level, current_score):
 
         if tile_content == 'n':      # Mały punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
-            return current_score + 10
+            return current_score + 10, False
         elif tile_content == 'o':    # Duży punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
-            return current_score + 50
+            return current_score + 50, True
             
-    return current_score
+    return current_score, False
+
+def handle_ghost_collision(ghost_sprite, player_sprite):
+   
+    if ghost_sprite.collision(player_sprite):
+
+        mode = ghost_sprite.mode
+        
+        # Przypadek 1: Duszek jest już zjedzony (wraca do domu) - ignorujemy kolizję
+        if mode == "EATEN":
+            return 0
+            
+        # Przypadek 2: Duszek jest przerażony - ZJADAMY GO
+        # Sprawdzamy obie pisownie używane w plikach: "FRIGHTENED" (Red/Inky) i "FRIGHTEND" (Pinky/Clyde)
+        if mode == "FRIGHTENED" or mode == "FRIGHTEND":
+            # Red i Inky zmieniają się same w swojej metodzie collision, 
+            # ale Pinky i Clyde potrzebują pomocy:
+            ghost_sprite.mode = "EATEN"
+            ghost_sprite.speed = EATEN_SPEED # Stała z CONST.py
+            return 200 # Standardowa nagroda za pierwszego duszka
+            
+        # Przypadek 3: Duszek jest w trybie CHASE lub SCATTER - CapMan ginie
+        return -1 # Kod błędu oznaczający śmierć gracza
+
+    return 0 # Brak kolizji
+
+def activate_frightened_mode():
+    """Aktywuje tryb przerażenia u wszystkich duszków"""
+    global is_frightened, frightened_start_time
+    is_frightened = True
+    frightened_start_time = p.time.get_ticks()
+    
+    # 1. Pinky (Brak metody, ręczne ustawienie, uwaga na literówkę w pinky.py)
+    pinky.sprite.mode = "FRIGHTEND" 
+    pinky.sprite.speed = FRIGHTENED_SPEED
+    
+    # 2. Clyde (Metoda scared, uwaga na literówkę w clyde.py)
+    clyde.sprite.scared()
+    
+    # 3. Red (Metoda frighten)
+    ghost_red.sprite.frighten()
+    
+    # 4. Inky (Metoda frighten)
+    ghost_inky.sprite.frighten()
+
+def update_ghosts_modes(current_time_sec):
+    """Zarządza powrotem do normalnego trybu po upływie czasu"""
+    global is_frightened
+    
+    if is_frightened:
+        # Sprawdzamy czy minęło 6 sekund (6000 ms)
+        if p.time.get_ticks() - frightened_start_time > FRIGHTENED_DURATION:
+            is_frightened = False
+            # Wymuszamy aktualizację trybu na podstawie czasu gry
+            # Pinky
+            pinky.sprite.mode_update(current_time_sec)
+            pinky.sprite.speed = PINKY_SPEED
+            # Clyde
+            clyde.sprite.unscared(current_time_sec)
+            # Red
+            ghost_red.sprite.mode_update(current_time_sec)
+            # Inky
+            ghost_inky.sprite.mode_update(current_time_sec)
 
 def show_game_final_score():
     overlay = p.Surface((WIDTH, HEIGHT))
@@ -118,6 +185,8 @@ while running:
                 player.sprite.direction = last_key
                 player.sprite.player_rotation(player.sprite.direction)
 
+    update_ghosts_modes(current_time_seconds)
+
     pinky.update(player.sprite, current_time_seconds)
     clyde.update(player.sprite, current_time_seconds)
     ghost_red.update(player.sprite, current_time_seconds)
@@ -125,21 +194,37 @@ while running:
 
     player.update(player.sprite.direction)
 
-    if (pinky.sprite.collision(player.sprite)or 
-            clyde.sprite.collision(player.sprite)or
-            ghost_red.sprite.collision(player.sprite)or
-            ghost_inky.sprite.collision(player.sprite)):
+    score, power_pellet = check_point_collision(player.sprite, level, score)
 
-            lives -= 1
-            print(f"HP DOWN\nREAMANING: {lives}")
-            player.draw(screen)
-            p.display.flip()
-            if lives > 0:
-                p.time.delay(1000)
-                reset_positions()
-            else:
-                show_game_final_score()
-                running = False
+    if power_pellet: activate_frightened_mode()
+
+    death_occured = False
+
+    ghosts_list = [pinky.sprite, clyde.sprite, ghost_red.sprite, ghost_inky.sprite]
+
+    for ghost in ghosts_list:
+        result = handle_ghost_collision(ghost, player.sprite)
+        
+        if result == -1: # Śmierć gracza
+            death_occured = True
+            break # Przerywamy pętlę, gracz nie żyje
+        elif result > 0: # Zjedzono duszka
+            score += result
+            # Opcjonalnie: dźwięk zjedzenia duszka
+
+    if death_occured:
+        lives -= 1
+        print(f"HP DOWN\nREAMANING: {lives}")
+
+        player.draw(screen)
+        p.display.flip()
+
+        if lives > 0:
+            p.time.delay(1000)
+            reset_positions()
+        else:
+            show_game_final_score()
+            running = False
 
     screen.fill('black')
     draw_map(screen, level)
@@ -150,15 +235,14 @@ while running:
     ghost_red.draw(screen)
     ghost_inky.draw(screen)
 
-    #Sprawdzenie kolizji z punktami i aktualizacja wyniku
-    score = check_point_collision(player.sprite, level, score)
+    #aktualizacja wyniku
     score_text = game_font.render(f"Licznik punktów: {score}", True, "white")
     screen.blit(score_text, (50, HEIGHT - 40))
 
     lives_text = game_font.render(f"Życia: {lives}", True, "red")
     screen.blit(lives_text, (WIDTH - 150, HEIGHT - 40))
 
-    
+
 
     p.display.flip()
     clock.tick(60)
