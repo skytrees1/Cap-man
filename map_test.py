@@ -109,6 +109,10 @@ while running:
         if event.type == p.QUIT:
             running = False
         if event.type == p.KEYDOWN:
+            if event.key == p.K_ESCAPE:
+                running = False
+                exit()
+
             last_key = player.sprite.checking_Pressed_Keys()
             if last_key != None:
                 player.sprite.direction = last_key
