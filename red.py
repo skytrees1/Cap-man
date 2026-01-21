@@ -41,7 +41,7 @@ class red(p.sprite.Sprite):
         self.next_direction = const.UP
         self.mode = "SCATTER"
         self.speed = const.PINKY_SPEED
-        self.image = p.image.load('images/blinky/blinky_down_1.png').convert_alpha()
+        self.image = p.image.load('assets/images/blinky/blinky_down_1.png').convert_alpha()
         self.image = p.transform.scale(self.image, (45, 45))
         
         start_px_x = self.home_tile_x * const.TILE_SIZE_X + const.TILE_SIZE_X // 2
@@ -161,8 +161,10 @@ class red(p.sprite.Sprite):
             if self.rect.colliderect(capman.rect):
                 self.mode="EATEN"
                 self.speed=const.EATEN_SPEED
+
         return self.rect.colliderect(capman.rect)
     def unscared(self, time):
         self.mode = "CHASE"
         self.mode_update(time)
         self.speed = const.PINKY_SPEED
+

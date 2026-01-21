@@ -1,0 +1,16 @@
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- Środowiska wirtualne ---
+venv/
+.venv/
+env/
+
+# --- System operacyjny (Mac & Windows) ---
+.DS_Store
+Thumbs.db
+
+# --- Edytory kodu ---
+.vscode/
+.idea/
