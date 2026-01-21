@@ -1,6 +1,7 @@
-"""
-Pinky - różowy duszek
-"""
+#Pinky - różowy duszek
+#Strategia:
+#Patrzy 4 pola przed pacmana
+
 import pygame
 import random
 import CONST as const
@@ -8,13 +9,13 @@ from board import board as grid
 from collections import deque
 
 #bfs
+#zwraca (x,y) pola na które należy przejść w kierunku celu
 def bfs(start_x, start_y, target_x, target_y, allowed):
     queue = deque([(start_x, start_y, [(start_x, start_y)])])
     visited = set([(start_x, start_y)])
     while queue:
         curr_x, curr_y, path = queue.popleft()
         if curr_x == target_x and curr_y == target_y: 
-            #print(path)
             return path[1] if len(path) > 1 else path[0]
         for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             nx, ny = curr_x + dx, curr_y + dy
@@ -46,10 +47,10 @@ class Pinky(pygame.sprite.Sprite):
 
         #wspolrzedne startowe
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))
-        self.home_x = self.rect.centerx
-        self.home_y = self.rect.centery
+        #self.home_x = self.rect.centerx
+        #self.home_y = self.rect.centery
 
-    #wyznaczenie pola w kierunku ktorego idzie duszek w zaleznosc od trybu
+    #wyznaczenie pola w kierunku ktorego idzie duszek w zaleznosci od trybu
     def get_target(self, pacman):
         #jezeli SCATTER to idzie do lewego gornego
         if self.mode == "SCATTER": return 2, 2
@@ -75,7 +76,6 @@ class Pinky(pygame.sprite.Sprite):
     def mode_update(self, time):
         if self.mode == "FRIGHTENED": return
         if self.mode == "EATEN":
-            #print(self.rect.centerx, self.home_x, self.rect.centery, self.home_y)
             if self.rect.centerx == self.home_x and self.rect.centery == self.home_y and self.cooldown != 0: self.cooldown -= 1
             if self.rect.centerx == self.home_x and self.rect.centery == self.home_y and self.cooldown == 0:
                 self.speed = const.PINKY_SPEED
@@ -148,7 +148,7 @@ class Pinky(pygame.sprite.Sprite):
     def update(self, pacman, time):
         #aktualizacja trybu
         self.mode_update(time)
-        #print(self.mode)
+
         #mozliwe ruchy #right left up down
         moves = self.possible_moves()
 
@@ -156,7 +156,7 @@ class Pinky(pygame.sprite.Sprite):
         target_x, target_y = self.get_target(pacman)
         #print(target_x, target_y)
 
-        if target_x == -1 and target_y == -1:
+        if target_x == -1 and target_y == -1: #losowy ruch
             directions = []
             if moves[0] and self.direction != const.LEFT: directions.append(const.RIGHT)
             if moves[1] and self.direction != const.RIGHT: directions.append(const.LEFT)
@@ -173,13 +173,11 @@ class Pinky(pygame.sprite.Sprite):
         allowed = "anop" if self.mode == "CHASE" else "anop" 
         goto = bfs(tile_x, tile_y, target_x, target_y, allowed)
         goto_x, goto_y = goto
-        #print(goto_x, goto_y, tile_x, tile_y)
 
         for i in range(4):
             #if not moves[i]: continue
             new_x = tile_x if const.DIRECTIONS[i] == 0 else (self.rect.centerx + (const.TILE_SIZE_X)*const.DIRECTIONS[i][0]) // const.TILE_SIZE_X
             new_y = tile_y if const.DIRECTIONS[i] == 0 else (self.rect.centery + (const.TILE_SIZE_Y)*const.DIRECTIONS[i][1]) // const.TILE_SIZE_Y
-            #print(new_x, new_y)
             if new_x == goto_x and new_y == goto_y: 
                 direction = const.DIRECTIONS[i]
         if tile_x == 0 and goto_x == 40: direction = const.LEFT
@@ -187,11 +185,9 @@ class Pinky(pygame.sprite.Sprite):
 
         self.move(direction)
 
-        #print(self.rect.centerx, self.rect.centery)
         #tunel
         if self.rect.centerx > const.WIDTH - 10: self.rect.centerx = 10
         elif self.rect.centerx < 10: self.rect.centerx = const.WIDTH - 10
-        #print(self.rect.centerx, self.rect.centery)
         return None
     
     #sprawdzenie kolizji
