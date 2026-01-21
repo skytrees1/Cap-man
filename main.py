@@ -47,7 +47,7 @@ try:
     try: sfx_power = p.mixer.Sound('assets/sounds/Power Up.wav'); sfx_power.set_volume(0.4)
     except: sfx_power = DummySound(); print("Brak pliku: sfx_power.wav")
 
-    try: sfx_eat_ghost = p.mixer.Sound('assets/sounds/Win sound.wav'); sfx_eat_ghost.set_volume(1.0)
+    try: sfx_eat_ghost = p.mixer.Sound('assets/sounds/Win sound.wav'); sfx_eat_ghost.set_volume(1.5)
     except: sfx_eat_ghost = DummySound(); print("Brak pliku: sfx_eat_ghost.wav")
 
     try: sfx_death = p.mixer.Sound('assets/sounds/1.mp3'); sfx_death.set_volume(0.8)
@@ -80,10 +80,13 @@ ghost_inky.add(inky())
 
 level = copy.deepcopy(board)
 
+total_dots = sum(row.count('n') + row.count('o') for row in level)
+
 # Zmienne do obsługi punktacji
 score = 0
 game_font = p.font.Font("assets/fonts/Tiny5-Regular.ttf", 45) 
 game_over_font = p.font.Font("assets/fonts/Tiny5-Regular.ttf", 200)
+win_font = p.font.Font("assets/fonts/Tiny5-Regular.ttf", 120)
 lives = 3
 
 #Zmienne do trybu przestraszenia/FRIGHTENED
@@ -120,6 +123,8 @@ def check_point_collision(player_sprite, current_level, current_score):
     tile_x = player_sprite.rect.centerx // TILE_SIZE_X
     tile_y = player_sprite.rect.centery // TILE_SIZE_Y
 
+    dots_eaten = 0
+
     # Zabezpieczenie przed wyjściem poza zakres tablicy
     if 0 <= tile_y < len(current_level) and 0 <= tile_x < len(current_level[0]):
         tile_content = current_level[tile_y][tile_x]
@@ -127,13 +132,13 @@ def check_point_collision(player_sprite, current_level, current_score):
         if tile_content == 'n':      # Mały punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
             sfx_dot.play(maxtime=1000)
-            return current_score + 10, False
+            return current_score + 10, False, dots_eaten
         elif tile_content == 'o':    # Duży punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
             sfx_power.play(maxtime=1000)
-            return current_score + 50, True
+            return current_score + 50, True, dots_eaten
             
-    return current_score, False
+    return current_score, False, 0
 
 def handle_ghost_collision(ghost_sprite, player_sprite):
    
@@ -236,6 +241,32 @@ def show_game_final_score():
     # Zamrożenie gry na 3 sekundy
     p.time.delay(3000)
 
+def show_game_win():
+    overlay = p.Surface((WIDTH, HEIGHT))
+    overlay.set_alpha(180)
+    overlay.fill((0,0,0))
+    game_screen.blit(overlay, (0,0))
+    
+    # Napis "GRATULACJE" na złoto/zielono
+    text_surf = win_font.render("GRATULACJE", True, "gold")
+    subtext_surf = game_font.render("WYGRALES!", True, "white")
+    score_surf = game_font.render(f"Wynik końcowy: {score}", True, "white")
+    
+    text_rect = text_surf.get_rect(center=(WIDTH/2, HEIGHT/2 - 100))
+    subtext_rect = subtext_surf.get_rect(center=(WIDTH/2, HEIGHT/2))
+    score_rect = score_surf.get_rect(center=(WIDTH/2, HEIGHT/2 + 60))
+    
+    game_screen.blit(text_surf, text_rect)
+    game_screen.blit(subtext_surf, subtext_rect)
+    game_screen.blit(score_surf, score_rect)
+
+    current_w, current_h = screen.get_size()
+    scaled_surface = p.transform.smoothscale(game_screen, (current_w, current_h))
+    screen.blit(scaled_surface, (0, 0))
+
+    p.display.flip()
+    p.time.delay(5000)
+
 reset_positions()
 running = True
 
@@ -270,9 +301,23 @@ while running:
 
     player.update(player.sprite.direction)
 
-    score, power_pellet = check_point_collision(player.sprite, level, score)
+    score, power_pellet, dots_eaten = check_point_collision(player.sprite, level, score)
+    total_dots -= dots_eaten
 
     if power_pellet: activate_frightened_mode()
+
+    if total_dots <= 0:
+        p.mixer.music.stop()
+       
+        sfx_eat_ghost.play() 
+        
+        game_screen.fill('black')
+        draw_map(game_screen, level)
+        player.draw(game_screen)
+        
+        show_game_win()
+        running = False
+        continue
 
     death_occured = False
 
