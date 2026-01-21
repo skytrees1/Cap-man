@@ -46,6 +46,8 @@ class Clyde(pygame.sprite.Sprite):
 
         #images_list[0], images_list[1] - right, images_list[2], images_list[3] - down, 
         #images_list[4], images_list[5] - left, images_list[6], images_list[7] - up
+        #images_list[8], images_list[9] - frightened ghost
+        #images_list[10], images_list[11], images_list[12], images_list[13] - eaten ghost
         self.images_list = []
         self.images_list.append(pygame.image.load('assets/images/clyde/clyde_right_1.png').convert_alpha())
         self.images_list.append(pygame.image.load('assets/images/clyde/clyde_right_2.png').convert_alpha())
@@ -55,8 +57,14 @@ class Clyde(pygame.sprite.Sprite):
         self.images_list.append(pygame.image.load('assets/images/clyde/clyde_left_2.png').convert_alpha())
         self.images_list.append(pygame.image.load('assets/images/clyde/clyde_up_1.png').convert_alpha())
         self.images_list.append(pygame.image.load('assets/images/clyde/clyde_up_2.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/frightened_ghost_1.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/frightened_ghost_2.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/eaten_ghost_right.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/eaten_ghost_down.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/eaten_ghost_left.png').convert_alpha())
+        self.images_list.append(pygame.image.load('assets/images/eaten_ghost_up.png').convert_alpha())
         
-        for i in range(8):
+        for i in range(14):
             self.images_list[i] = pygame.transform.scale(self.images_list[i], (45, 45))
         self.image = self.images_list[3]
 
@@ -64,7 +72,19 @@ class Clyde(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = (self.home_x, self.home_y))
 
     def animation(self, time):
-        if self.direction == const.RIGHT and int(((time*10) % 6) % 2) == 0:
+        if self.mode == "EATEN" and self.direction == const.RIGHT:
+            self.image = self.images_list[10]
+        elif self.mode == "EATEN" and self.direction == const.DOWN:
+            self.image = self.images_list[11]
+        elif self.mode == "EATEN" and self.direction == const.LEFT:
+            self.image = self.images_list[12]
+        elif self.mode == "EATEN" and self.direction == const.UP:
+            self.image = self.images_list[13]
+        elif self.mode == "FRIGHTENED" and int(((time*10) % 6) % 2) == 0:
+            self.image = self.images_list[8]
+        elif self.mode == "FRIGHTENED" and int(((time*10) % 6) % 2) == 1:
+            self.image = self.images_list[9]
+        elif self.direction == const.RIGHT and int(((time*10) % 6) % 2) == 0:
             self.image = self.images_list[0]
         elif self.direction == const.RIGHT and int(((time*10) % 6) % 2) == 1:
             self.image = self.images_list[1]
@@ -175,6 +195,9 @@ class Clyde(pygame.sprite.Sprite):
         #aktualizacja trybu
         self.mode_update(time)
 
+        if self.mode == "FRIGHTENED":
+            self.animation(time)
+        
         #mozliwe ruchy #right left up down
         moves = self.possible_moves()
 

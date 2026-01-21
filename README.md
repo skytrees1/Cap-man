@@ -32,7 +32,7 @@ Gra obsługiwana jest za pomocą klawiatury:
 ---
 ## Grafika z gry
 <p align="center">
-  <img src="grafika_z_gry.png" alt="Screen z gry" width="100%">
+  <img src="assets/images/grafika_z_gry.png" alt="Screen z gry" width="100%">
 </p>
 
 ---
