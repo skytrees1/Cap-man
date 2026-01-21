@@ -21,6 +21,7 @@ screen = p.display.set_mode((WIDTH, HEIGHT), p.RESIZABLE)
 game_screen = p.Surface((WIDTH, HEIGHT))
 clock = p.time.Clock()
 
+
 MUSIC_MAIN = None
 MUSIC_FRIGHTENED = None
 sfx_dot = None
