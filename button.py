@@ -34,6 +34,10 @@ class Button:
         self.is_hovered = self.rect.collidepoint(mouse_pos)
         
     
-    def handle_event(self, event):
-        if event.type == p.MOUSEBUTTONDOWN and event.button == 1 and self.is_hovered:
-            p.event.post(p.event.Event(p.USEREVENT, button=self))
+    def handle_event(self, event, pos=None):
+        if pos is None:
+            pos = p.mouse.get_pos()
+            
+        if event.type == p.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(pos):
+                p.event.post(p.event.Event(p.USEREVENT, button=self))

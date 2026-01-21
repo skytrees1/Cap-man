@@ -36,11 +36,21 @@ def main_menu():
         game_screen.blit(pinky, (625,716))
         game_screen.blit(cap_man, (850,716))
 
+        curr_w, curr_h = screen.get_size()
+        # Oblicz współczynnik skali
+        scale_x = WIDTH / curr_w
+        scale_y = HEIGHT / curr_h
+
+        # Pobierz pozycję myszy i ją przelicz
+        mouse_pos = p.mouse.get_pos()
+        adjusted_mouse_pos = (mouse_pos[0] * scale_x, mouse_pos[1] * scale_y)
+
         for event in p.event.get():
             if event.type == p.QUIT:
                 running = False
                 p.quit()
                 sys.exit()
+
             if event.type == p.USEREVENT:
                 if event.button == play_button:
                     return "PLAY"
@@ -48,15 +58,14 @@ def main_menu():
                     return "EXIT"
                 
             for btn in [play_button, exit_button]:
-                btn.handle_event(event)
+                btn.handle_event(event, adjusted_mouse_pos)
 
         for btn in [play_button, exit_button]:
-            btn.check_hover(p.mouse.get_pos())
+            btn.check_hover(adjusted_mouse_pos)
             btn.draw(game_screen)
          # skalowanie obrazu 
-         
-        current_w, current_h = screen.get_size()
-        scaled_surface = p.transform.smoothscale(game_screen, (current_w, current_h))
+    
+        scaled_surface = p.transform.smoothscale(game_screen, (curr_w, curr_h))
         screen.blit(scaled_surface, (0, 0))
 
         p.display.flip()
