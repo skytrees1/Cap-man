@@ -80,7 +80,9 @@ ghost_inky.add(inky())
 
 level = copy.deepcopy(board)
 
-total_dots = sum(row.count('n') + row.count('o') for row in level)
+dots_count = sum(row.count('n') + row.count('o') for row in level)
+
+current_dots_score = 0
 
 # Zmienne do obsługi punktacji
 score = 0
@@ -123,7 +125,7 @@ def check_point_collision(player_sprite, current_level, current_score):
     tile_x = player_sprite.rect.centerx // TILE_SIZE_X
     tile_y = player_sprite.rect.centery // TILE_SIZE_Y
 
-    dots_eaten = 0
+    item_eaten = 0
 
     # Zabezpieczenie przed wyjściem poza zakres tablicy
     if 0 <= tile_y < len(current_level) and 0 <= tile_x < len(current_level[0]):
@@ -132,11 +134,13 @@ def check_point_collision(player_sprite, current_level, current_score):
         if tile_content == 'n':      # Mały punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
             sfx_dot.play(maxtime=1000)
-            return current_score + 10, False, dots_eaten
+            item_eaten = 1
+            return current_score + 10, False, item_eaten
         elif tile_content == 'o':    # Duży punkt
             current_level[tile_y][tile_x] = 'a' # Zamień na puste pole ('a')
             sfx_power.play(maxtime=1000)
-            return current_score + 50, True, dots_eaten
+            item_eaten = 1
+            return current_score + 50, True, item_eaten
             
     return current_score, False, 0
 
@@ -248,7 +252,7 @@ def show_game_win():
     game_screen.blit(overlay, (0,0))
     
     # Napis "GRATULACJE" na złoto/zielono
-    text_surf = win_font.render("GRATULACJE", True, "gold")
+    text_surf = win_font.render("HELLOW WINNER", True, "gold")
     subtext_surf = game_font.render("WYGRALES!", True, "white")
     score_surf = game_font.render(f"Wynik końcowy: {score}", True, "white")
     
@@ -302,13 +306,14 @@ while running:
     player.update(player.sprite.direction)
 
     score, power_pellet, dots_eaten = check_point_collision(player.sprite, level, score)
-    total_dots -= dots_eaten
+
+    if dots_eaten > 0:
+        dots_count -= dots_eaten
 
     if power_pellet: activate_frightened_mode()
 
-    if total_dots <= 0:
+    if dots_count == 0:
         p.mixer.music.stop()
-       
         sfx_eat_ghost.play() 
         
         game_screen.fill('black')
