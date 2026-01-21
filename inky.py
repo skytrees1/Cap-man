@@ -47,7 +47,7 @@ class inky(p.sprite.Sprite):
         self.mode = "SCATTER"
         self.speed = const.PINKY_SPEED
         
-        self.image = p.image.load('images/inky/inky_down_1.png').convert_alpha()
+        self.image = p.image.load('assets/images/inky/inky_down_1.png').convert_alpha()
         self.image = p.transform.scale(self.image, (45, 45))
         
         start_px_x = self.home_tile_x * const.TILE_SIZE_X + const.TILE_SIZE_X // 2

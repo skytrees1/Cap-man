@@ -8,6 +8,7 @@
 * [Grafika z gry](#grafika-z-gry)
 * [Uruchamianie programu](#uruchamianie-programu)
 * [Twórcy](#twórcy)
+* [Wykorzystane zasoby](#wykorzystane-zasoby)
 ---
 ## O projekcie
 **CapMan** to gra zręcznościowa przygotowana w ramach zajęć z **Podstawowego Warsztatu Informatyka** na kierunku Informatyka (Wydział Matematyki i Informatyki Uniwersytetu Wrocławskiego).
@@ -30,7 +31,9 @@ Gra obsługiwana jest za pomocą klawiatury:
 
 ---
 ## Grafika z gry
-tu będzie zdjęcie z gry
+<p align="center">
+  <img src="grafika_z_gry.png" alt="Screen z gry" width="100%">
+</p>
 
 ---
 ## Uruchamianie programu
@@ -56,3 +59,19 @@ Autorami projektu są:
 * Mateusz Mucha
 * Krzysztof Nowak
 * Piotr Porzycki 
+
+---
+## Wykorzystane zasoby
+Gra wykorzystuje elementy graficzne i dźwiękowe dostępne na darmowych licencjach.
+### Dźwięk:
+Muzyka pobrana z [OpenGameArt.org](https://opengameart.org)
+* "Charge!" – Centurion_of_war 
+* "Short battle theme" - Guy G. Gamerson
+* "Picked Coin Echo 2" - NenadSimic
+* "Power Up, Level Up" - Quitschie
+* "Win sound effect" - Listener
+* "Hurt / Death sound effect for character" - Badre-Eddine
+### Czcionka:
+* **Tiny5** - Pobrane z [Google Fonts](https://fonts.google.com)
+
+---
