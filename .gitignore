@@ -14,3 +14,5 @@ Thumbs.db
 # --- Edytory kodu ---
 .vscode/
 .idea/
+__pycache__/
+*.pyc
