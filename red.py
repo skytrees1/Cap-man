@@ -51,7 +51,7 @@ class red(p.sprite.Sprite):
         self.last_tile = (-1, -1)
 
     def mode_update(self, time):
-        if self.mode == "FRIGHTEND": return
+        if self.mode == "FRIGHTENED": return
         if self.mode == "EATEN": return
         if 0 < time <= 7: self.mode = "SCATTER"
         elif 7 < time <= 27: self.mode = "CHASE"
