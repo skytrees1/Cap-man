@@ -51,7 +51,7 @@ class red(p.sprite.Sprite):
         self.last_tile = (-1, -1)
 
     def mode_update(self, time):
-        if self.mode == "FRIGHTEND": return
+        if self.mode == "FRIGHTENED": return
         if self.mode == "EATEN": return
         if 0 < time <= 7: self.mode = "SCATTER"
         elif 7 < time <= 27: self.mode = "CHASE"
@@ -69,13 +69,10 @@ class red(p.sprite.Sprite):
         return int(capman.rect.centerx // const.TILE_SIZE_X), int(capman.rect.centery // const.TILE_SIZE_Y)
 
     def frighten(self):
-        #funkcja do wywolania w przypadku zjedzenia
-        #przez capmana duzego punkta
         self.mode="FRIGHTENED"
         self.speed=const.FRIGHTENED_SPEED
 
     def update(self, capman, time):
-        #do wywolywania co obrot petli
         if capman is None: return
         self.mode_update(time)
         if self.mode=="EATEN" and self.rect.centerx//const.TILE_SIZE_X==self.home_tile_x and self.rect.centery//const.TILE_SIZE_Y==self.home_tile_y:
@@ -90,7 +87,13 @@ class red(p.sprite.Sprite):
         center_x = curr_tile_x * const.TILE_SIZE_X + const.TILE_SIZE_X // 2
         center_y = curr_tile_y * const.TILE_SIZE_Y + const.TILE_SIZE_Y // 2
 
-        allowed = "anop" if self.mode in ["SCATTER", "EATEN"] else "ano"
+        is_inside_house = 5 < curr_tile_y < 12 and 19 < curr_tile_x < 24
+        if self.mode == "EATEN":
+            allowed = "anop"
+        elif is_inside_house:
+            allowed = "anop"
+        else:
+            allowed = "ano"
 
         if (curr_tile_x, curr_tile_y) != self.last_tile:
             
@@ -120,6 +123,9 @@ class red(p.sprite.Sprite):
                     elif nx < curr_tile_x: self.next_direction = const.LEFT
                     elif ny > curr_tile_y: self.next_direction = const.DOWN
                     elif ny < curr_tile_y: self.next_direction = const.UP
+                else:
+                    if grid[curr_tile_y][curr_tile_x+1] in allowed: self.next_direction = const.RIGHT
+                    elif grid[curr_tile_y][curr_tile_x-1] in allowed: self.next_direction = const.LEFT
             
             self.last_tile = (curr_tile_x, curr_tile_y)
 
@@ -128,21 +134,37 @@ class red(p.sprite.Sprite):
                 self.rect.center = (center_x, center_y)
                 self.direction = self.next_direction
 
-        check_dist = 15 
+        check_dist = 14 
         check_x = int((self.rect.centerx + self.direction[0] * check_dist) // const.TILE_SIZE_X)
         check_y = int((self.rect.centery + self.direction[1] * check_dist) // const.TILE_SIZE_Y)
         
-        if 0 <= check_y < len(grid) and 0 <= check_x < len(grid[0]) and grid[check_y][check_x] in allowed:
+        can_move = False
+        if 0 <= check_y < len(grid) and 0 <= check_x < len(grid[0]):
+            if grid[check_y][check_x] in allowed:
+                can_move = True
+        if can_move:
             self.rect.x += self.direction[0] * self.speed
             self.rect.y += self.direction[1] * self.speed
         else:
-            self.last_tile = (-1, -1)
+            self.rect.center = (center_x, center_y)
+            if not is_inside_house:
+                 self.last_tile = (-1, -1)
+            else:
+                if self.direction == const.DOWN: 
+                    self.direction = const.UP
+                    self.next_direction = const.UP
+        
         
     def collision(self, capman):
-        #do wywolania w przypadku kolizji reda z capmanem
         if self.mode == "EATEN": return False
         if self.mode == "FRIGHTENED":
             if self.rect.colliderect(capman.rect):
                 self.mode="EATEN"
                 self.speed=const.EATEN_SPEED
+
         return self.rect.colliderect(capman.rect)
+    def unscared(self, time):
+        self.mode = "CHASE"
+        self.mode_update(time)
+        self.speed = const.PINKY_SPEED
+
