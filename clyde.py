@@ -28,7 +28,7 @@ def bfs(start_x, start_y, target_x, target_y, allowed, flag):
         #tunel
         if curr_x == 0 and (40, curr_y) not in visited: queue.append((40, curr_y, path + [(40, curr_y)]))
         if curr_x == 40 and (0, curr_y) not in visited: queue.append((0, curr_y, path + [(0, curr_y)]))
-    return None
+    return 100
 
 #stworzenie klasy duszka
 
@@ -159,6 +159,9 @@ class Clyde(pygame.sprite.Sprite):
             if moves[3] and self.direction != const.UP: directions.append(const.DOWN)
             if self.direction in directions: self.move(self.direction)
             else: self.move(random.choice(directions))
+            #tunel
+            if self.rect.centerx > const.WIDTH - 10: self.rect.centerx = 10
+            elif self.rect.centerx < 10: self.rect.centerx = const.WIDTH - 10
             return
         
         tile_x = self.rect.centerx // const.TILE_SIZE_X

@@ -146,12 +146,12 @@ def handle_ghost_collision(ghost_sprite, player_sprite):
             return 0
             
         # Przypadek 2: Duszek jest przerażony - ZJADAMY GO
-        # Sprawdzamy obie pisownie używane w plikach: "FRIGHTENED" (Red/Inky) i "FRIGHTEND" (Pinky/Clyde)
-        if mode == "FRIGHTENED" or mode == "FRIGHTEND":
+        if mode == "FRIGHTENED":
             # Red i Inky zmieniają się same w swojej metodzie collision, 
             # ale Pinky i Clyde potrzebują pomocy:
             ghost_sprite.mode = "EATEN"
             ghost_sprite.speed = EATEN_SPEED # Stała z CONST.py
+            if(ghost_sprite == pinky.sprite or ghost_sprite == clyde.sprite): ghost_sprite.cooldown = BASIC_COOLDOWN
             sfx_eat_ghost.play(maxtime=1000)
             return 200 # Standardowa nagroda za pierwszego duszka
             
@@ -173,11 +173,10 @@ def activate_frightened_mode():
         except Exception as e:
             print(f"Błąd odtwarzania muzyki FRIGHTENED: {e}")
 
-    # 1. Pinky (Brak metody, ręczne ustawienie, uwaga na literówkę w pinky.py)
-    pinky.sprite.mode = "FRIGHTEND" 
-    pinky.sprite.speed = FRIGHTENED_SPEED
+    # 1. Pinky 
+    pinky.sprite.scared()
     
-    # 2. Clyde (Metoda scared, uwaga na literówkę w clyde.py)
+    # 2. Clyde
     clyde.sprite.scared()
     
     # 3. Red (Metoda frighten)
@@ -203,8 +202,7 @@ def update_ghosts_modes(current_time_sec):
 
             # Wymuszamy aktualizację trybu na podstawie czasu gry
             # Pinky
-            pinky.sprite.mode_update(current_time_sec)
-            pinky.sprite.speed = PINKY_SPEED
+            pinky.sprite.unscared(current_time_sec)
             # Clyde
             clyde.sprite.unscared(current_time_sec)
             # Red
